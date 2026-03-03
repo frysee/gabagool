@@ -198,8 +198,22 @@ func (p *processMessage) render(renderer *sdl.Renderer) {
 			height = p.window.GetHeight()
 		}
 
-		x := (p.window.GetWidth() - width) / 2
-		y := (p.window.GetHeight() - height) / 2
+		// Scale down to fit within the window, preserving aspect ratio
+		windowWidth := p.window.GetWidth()
+		windowHeight := p.window.GetHeight()
+		if width > windowWidth || height > windowHeight {
+			scaleX := float64(windowWidth) / float64(width)
+			scaleY := float64(windowHeight) / float64(height)
+			scale := scaleX
+			if scaleY < scaleX {
+				scale = scaleY
+			}
+			width = int32(float64(width) * scale)
+			height = int32(float64(height) * scale)
+		}
+
+		x := (windowWidth - width) / 2
+		y := (windowHeight - height) / 2
 
 		renderer.Copy(p.imageTexture, nil, &sdl.Rect{X: x, Y: y, W: width, H: height})
 	}
